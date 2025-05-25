@@ -1,21 +1,110 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Link Shortener</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f0f0f0;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #aaa;
+      text-align: center;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+    #shortenedLink a {
+      display: block;
+      margin-top: 15px;
+      word-break: break-all;
+      color: blue;
+    }
+    #goBtn, #timerArea, #robotBtn {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Link Shortener</h2>
-    <input type="text" id="originalUrl" placeholder="Enter URL to shorten">
-    <button onclick="generateLink()">Shorten</button>
-    <div id="shortenedLink"></div>
+  <div class="container" id="mainArea">
+    <!-- Dynamic Content আসবে এখানে -->
   </div>
 
- <script src="script.js"></script>
+  <script>
+    const container = document.getElementById("mainArea");
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
 
+    if (id) {
+      // === Redirect Mode ===
+      const targetUrl = localStorage.getItem("link_" + id);
+      if (!targetUrl) {
+        container.innerHTML = "<p>Invalid or expired link!</p>";
+      } else {
+        container.innerHTML = `
+          <h2>Link Verification</h2>
+          <button id="robotBtn">I am not Robot</button>
+          <div id="timerArea">Please wait <span id="timer">10</span> seconds...</div>
+          <button id="goBtn">Get Ready</button>
+        `;
+
+        document.getElementById("robotBtn").style.display = "block";
+
+        document.getElementById("robotBtn").onclick = () => {
+          document.getElementById("robotBtn").style.display = "none";
+          document.getElementById("timerArea").style.display = "block";
+
+          let count = 10;
+          const interval = setInterval(() => {
+            count--;
+            document.getElementById("timer").innerText = count;
+            if (count === 0) {
+              clearInterval(interval);
+              document.getElementById("timerArea").style.display = "none";
+              document.getElementById("goBtn").style.display = "block";
+            }
+          }, 1000);
+        };
+
+        document.getElementById("goBtn").onclick = () => {
+          window.location.href = targetUrl;
+        };
+      }
+    } else {
+      // === Home / Shorten Page ===
+      container.innerHTML = `
+        <h2>Link Shortener</h2>
+        <input type="text" id="originalUrl" placeholder="Paste your URL here">
+        <button onclick="generateLink()">Shorten</button>
+        <div id="shortenedLink"></div>
+      `;
+    }
+
+    function generateLink() {
+      const originalUrl = document.getElementById("originalUrl").value.trim();
+      if (!originalUrl) return alert("Please enter a URL");
+
+      const newId = Math.random().toString(36).substr(2, 6);
+      localStorage.setItem("link_" + newId, originalUrl);
+
+      const shortLink = `${window.location.origin}${window.location.pathname}?id=${newId}`;
+      document.getElementById("shortenedLink").innerHTML = `
+        <p>Shortened URL:</p>
+        <a href="${shortLink}" target="_blank">${shortLink}</a>
+      `;
+    }
+  </script>
 </body>
 </html>
