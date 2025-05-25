@@ -5,53 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Link Shortener</title>
 <style>
-  body {
-    font-family: sans-serif;
-    background: #f0f0f0;
-    margin: 0;
-    padding: 20px;
-  }
-  .container {
-    max-width: 500px;
-    margin: auto;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px #aaa;
-    text-align: center;
-  }
-  input,
-  button {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    font-size: 16px;
-  }
-  #shortenedLink a {
-    display: block;
-    margin-top: 15px;
-    word-break: break-all;
-    color: blue;
-  }
-  #goBtn,
-  #timerArea,
-  #robotBtn {
-    display: none;
-  }
+  body { font-family: sans-serif; background: #f0f0f0; margin: 0; padding: 20px; }
+  .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px #aaa; text-align: center; }
+  input, button { width: 100%; padding: 10px; margin-top: 10px; font-size: 16px; }
+  #shortenedLink a { display: block; margin-top: 15px; word-break: break-all; color: blue; }
+  #goBtn, #timerArea, #robotBtn { display: none; }
 </style>
 </head>
 <body>
-<div class="container" id="mainArea">
-  <!-- Content will be inserted here -->
-</div>
-
+<div class="container" id="mainArea"></div>
 <script>
   const container = document.getElementById("mainArea");
   const params = new URLSearchParams(window.location.search);
   const id = params.get("id");
 
   if (id) {
-    // Redirect Mode
     const targetUrl = localStorage.getItem("link_" + id);
     if (!targetUrl) {
       container.innerHTML = "<p>Invalid or expired link!</p>";
@@ -90,7 +58,6 @@
       };
     }
   } else {
-    // Home / Shorten Page
     container.innerHTML = `
       <h2>Link Shortener</h2>
       <input type="text" id="originalUrl" placeholder="Paste your URL here" />
